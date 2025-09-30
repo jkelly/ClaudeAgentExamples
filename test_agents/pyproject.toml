@@ -1,0 +1,16 @@
+[project]
+name = "claude-agent-tests"
+version = "0.1.0"
+description = "Test agents using Claude Agent SDK"
+requires-python = ">=3.10"
+dependencies = [
+    "claude-agent-sdk>=0.1.0",
+    "pyodbc>=5.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
