@@ -13,7 +13,7 @@ A collection of example agents demonstrating the capabilities of the [Claude Age
 
 1. Clone this repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/jkelly/ClaudeAgentExamples.git
 cd ClaudeAgentExamples
 ```
 
