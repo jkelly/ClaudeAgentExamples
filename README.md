@@ -7,7 +7,7 @@ A collection of example agents demonstrating the capabilities of the [Claude Age
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv) package manager
 - Claude Code CLI (install with: `npm install -g @anthropic-ai/claude-code`)
-- Anthropic API key set in your environment
+- Claude Code setup with a Anthropic API key set in your environment or through the Pro or Max Plan.
 
 ## Installation
 
