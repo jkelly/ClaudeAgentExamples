@@ -148,6 +148,53 @@ pip install pyodbc
 uv run interactive_agent.py
 ```
 
+### 8. Multi-Provider Agent ([multi_provider_agent.py](test_agents/multi_provider_agent.py))
+
+Demonstrates using the Claude Agent SDK with different AI model providers via Anthropic-compatible endpoints.
+
+**Features:**
+- Support for multiple AI providers using Claude Agent SDK
+- Uses `env` parameter in `ClaudeAgentOptions` to configure different providers
+- Uses `model` parameter to specify provider-specific models
+- Automatic provider detection based on available API keys
+- Interactive mode with provider switching
+- Side-by-side comparison testing
+
+**Supported Providers:**
+- **Claude** - Anthropic's Claude models (default)
+- **GLM 4.6** - Z.AI's coding-focused model via Anthropic-compatible endpoint
+- **Deepseek** - Advanced Chinese AI model with Anthropic API compatibility
+
+**Key SDK Features Demonstrated:**
+- `env` parameter for custom base URLs and authentication
+- `model` parameter for specifying different models
+- Environment-based configuration without hardcoding credentials
+
+**Setup:**
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp test_agents/.env.example test_agents/.env
+   ```
+2. Add API keys for the providers you want to use
+3. Install dependencies: `uv sync`
+
+**Usage:**
+```bash
+# Run comparison test (default)
+uv run multi_provider_agent.py
+
+# Run comparison test explicitly
+uv run multi_provider_agent.py --compare
+
+# Test specific provider
+uv run multi_provider_agent.py --claude
+uv run multi_provider_agent.py --glm
+uv run multi_provider_agent.py --deepseek
+
+# Interactive mode
+uv run multi_provider_agent.py --interactive
+```
+
 ## Running All Tests
 
 To run all test agents sequentially:
@@ -170,9 +217,19 @@ ClaudeAgentExamples/
 │   ├── file_processor_agent.py     # File system analysis
 │   ├── error_handling_agent.py     # Error handling patterns
 │   ├── interactive_agent.py        # Interactive chatbot with SQL
+│   ├── multi_provider_agent.py     # Multi-provider AI models
 │   ├── run_all_tests.py            # Test runner
+│   ├── .env.example                # Environment variables template
 │   ├── pyproject.toml              # Project dependencies
 │   └── uv.lock                     # Dependency lock file
+├── AI_DOCS/                        # Comprehensive SDK documentation
+│   ├── README.md                   # Documentation index
+│   ├── 01-SDK-Overview-and-Getting-Started.md
+│   ├── 02-API-Reference.md
+│   ├── 03-Custom-Tools-and-MCP.md
+│   ├── 04-Permissions-and-Security.md
+│   ├── 05-Advanced-Topics.md
+│   └── 06-Examples-and-Best-Practices.md
 └── README.md                       # This file
 ```
 
@@ -204,6 +261,17 @@ async def my_hook(input_data, tool_use_id, context):
     # Validation logic
     return {"hookSpecificOutput": {...}}
 ```
+
+## Documentation
+
+Comprehensive documentation is available in the [AI_DOCS](AI_DOCS/) folder:
+
+- **[Getting Started](AI_DOCS/01-SDK-Overview-and-Getting-Started.md)** - Installation, quick start, core concepts
+- **[API Reference](AI_DOCS/02-API-Reference.md)** - Complete API documentation
+- **[Custom Tools & MCP](AI_DOCS/03-Custom-Tools-and-MCP.md)** - Extend Claude's capabilities
+- **[Permissions & Security](AI_DOCS/04-Permissions-and-Security.md)** - Secure your agents
+- **[Advanced Topics](AI_DOCS/05-Advanced-Topics.md)** - Subagents, context management, production
+- **[Examples & Best Practices](AI_DOCS/06-Examples-and-Best-Practices.md)** - Patterns and tips
 
 ## Learn More
 
