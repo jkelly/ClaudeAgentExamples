@@ -54,7 +54,7 @@ class MultiProviderConfig:
             if not api_key:
                 raise ValueError("DEEPSEEK_API_KEY not set in .env file")
             return {
-                "ANTHROPIC_BASE_URL": "https://api.deepseek.com",
+                "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
                 "ANTHROPIC_AUTH_TOKEN": api_key
             }, "deepseek-chat"
 
