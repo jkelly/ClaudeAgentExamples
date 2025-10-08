@@ -118,3 +118,6 @@ logs/
 # Claude Code
 .claude/
 .claude_history
+
+# Generated story files
+test_agents/story_*.md

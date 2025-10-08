@@ -1,0 +1,115 @@
+# LiteLLM Proxy Configuration for Multi-Provider Agent
+# This config enables OpenAI models to work with Claude Agent SDK
+#
+# Usage:
+#   1. Set OPENAI_API_KEY in your .env file
+#   2. Run: litellm --config litellm_config.yaml --port 4000
+#
+# For more info, see LITELLM_SETUP.md
+
+model_list:
+  # ============================================================================
+  # OPENAI MODELS
+  # ============================================================================
+
+  # GPT-4o (Recommended - Latest flagship model)
+  - model_name: gpt-4o
+    litellm_params:
+      model: gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  # GPT-4o Mini (Faster and cheaper)
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+  # o1 (Advanced reasoning model)
+  - model_name: o1
+    litellm_params:
+      model: o1
+      api_key: os.environ/OPENAI_API_KEY
+
+  # o1-mini (Faster reasoning model)
+  - model_name: o1-mini
+    litellm_params:
+      model: o1-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+  # GPT-4 Turbo (Previous generation)
+  - model_name: gpt-4-turbo
+    litellm_params:
+      model: gpt-4-turbo
+      api_key: os.environ/OPENAI_API_KEY
+
+  # GPT-3.5 Turbo (Fastest and cheapest)
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: gpt-3.5-turbo
+      api_key: os.environ/OPENAI_API_KEY
+
+  # ============================================================================
+  # OPTIONAL: Add more providers here
+  # ============================================================================
+
+  # Example: Azure OpenAI
+  # - model_name: azure-gpt-4
+  #   litellm_params:
+  #     model: azure/gpt-4
+  #     api_base: os.environ/AZURE_API_BASE
+  #     api_key: os.environ/AZURE_API_KEY
+  #     api_version: "2024-02-15-preview"
+
+  # Example: Local Ollama
+  # - model_name: llama3
+  #   litellm_params:
+  #     model: ollama/llama3
+  #     api_base: http://localhost:11434
+
+# ============================================================================
+# GENERAL SETTINGS
+# ============================================================================
+
+general_settings:
+  # Master key for authenticating to LiteLLM proxy
+  # IMPORTANT: Change this to a secure value in production!
+  master_key: sk-1234
+
+  # Uncomment to enable detailed logging
+  # set_verbose: true
+
+  # Uncomment to enable caching (requires Redis)
+  # cache: true
+  # cache_type: "redis"
+  # redis_host: "localhost"
+  # redis_port: 6379
+
+  # Uncomment to enable cost tracking (requires PostgreSQL)
+  # database_url: "postgresql://user:password@localhost:5432/litellm"
+
+  # Request timeout (in seconds)
+  request_timeout: 600
+
+  # Max parallel requests per model
+  # max_parallel_requests: 1000
+
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# Model Naming:
+#   - Use the model_name when calling from multi_provider_agent.py
+#   - Set OPENAI_MODEL in .env to choose which model to use
+#
+# Authentication:
+#   - The master_key is used by multi_provider_agent.py (set as LITELLM_API_KEY in .env)
+#   - The OPENAI_API_KEY is read from environment variables
+#
+# Running the proxy:
+#   litellm --config litellm_config.yaml --port 4000
+#
+# Docker alternative:
+#   See LITELLM_SETUP.md for Docker Compose setup
+#
+# Documentation:
+#   https://docs.litellm.ai/

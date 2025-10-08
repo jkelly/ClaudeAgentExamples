@@ -1,12 +1,17 @@
 """
 Multi-Provider Agent - Demonstrates using different AI model providers with Claude Agent SDK
-Supports: GLM 4.6 (Z.AI) and Deepseek via Anthropic-compatible endpoints
+Supports:
+- Claude (Anthropic)
+- GLM 4.6 (Z.AI) via Anthropic-compatible endpoint
+- Deepseek via Anthropic-compatible endpoint
+- OpenAI (GPT-4o, o1, etc.) via LiteLLM proxy
 
 Run with: uv run multi_provider_agent.py
 
 Requirements:
 - Copy .env.example to .env and configure your API keys
 - Install dependencies: uv sync
+- For OpenAI: Run LiteLLM proxy (see LITELLM_SETUP.md)
 """
 import asyncio
 import os
@@ -17,7 +22,7 @@ from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, AssistantMessa
 # Load environment variables from .env file
 load_dotenv()
 
-ProviderType = Literal["claude", "glm", "deepseek"]
+ProviderType = Literal["claude", "glm", "deepseek", "openai"]
 
 
 class MultiProviderConfig:
@@ -29,7 +34,7 @@ class MultiProviderConfig:
         Get environment variables and model name for a provider.
 
         Args:
-            provider: The provider type (claude, glm, deepseek)
+            provider: The provider type (claude, glm, deepseek, openai)
 
         Returns:
             Tuple of (env_vars dict, model_name)
@@ -58,6 +63,24 @@ class MultiProviderConfig:
                 "ANTHROPIC_AUTH_TOKEN": api_key
             }, "deepseek-chat"
 
+        elif provider == "openai":
+            # OpenAI via LiteLLM proxy
+            litellm_base_url = os.getenv("LITELLM_BASE_URL", "http://localhost:4000/anthropic")
+            litellm_api_key = os.getenv("LITELLM_API_KEY", "sk-1234")
+            openai_model = os.getenv("OPENAI_MODEL", "gpt-4o")
+
+            # Check if LiteLLM is configured
+            if not os.getenv("OPENAI_API_KEY"):
+                raise ValueError(
+                    "OPENAI_API_KEY not set in .env file. "
+                    "Also ensure LiteLLM proxy is running. See LITELLM_SETUP.md"
+                )
+
+            return {
+                "ANTHROPIC_BASE_URL": litellm_base_url,
+                "ANTHROPIC_AUTH_TOKEN": litellm_api_key
+            }, openai_model
+
         else:
             raise ValueError(f"Unknown provider: {provider}")
 
@@ -68,7 +91,7 @@ async def query_with_provider(prompt: str, provider: ProviderType) -> None:
 
     Args:
         prompt: The user's query
-        provider: Which provider to use (claude, glm, or deepseek)
+        provider: Which provider to use (claude, glm, deepseek, or openai)
     """
     try:
         env_vars, model = MultiProviderConfig.get_provider_config(provider)
@@ -106,10 +129,13 @@ async def run_comparison_test():
         providers.append("glm")
     if os.getenv("DEEPSEEK_API_KEY"):
         providers.append("deepseek")
+    if os.getenv("OPENAI_API_KEY"):
+        providers.append("openai")
 
     if not providers:
         print("Error: No API keys configured. Please set up your .env file.")
         print("See .env.example for required variables.")
+        print("For OpenAI: Also see LITELLM_SETUP.md for proxy setup.")
         return
 
     print("=" * 70)
@@ -153,10 +179,13 @@ async def interactive_mode():
         available_providers.append("glm")
     if os.getenv("DEEPSEEK_API_KEY"):
         available_providers.append("deepseek")
+    if os.getenv("OPENAI_API_KEY"):
+        available_providers.append("openai")
 
     if not available_providers:
         print("Error: No API keys configured. Please set up your .env file.")
         print("See .env.example for required variables.")
+        print("For OpenAI: Also see LITELLM_SETUP.md for proxy setup.")
         return
 
     print("=" * 70)
@@ -167,6 +196,7 @@ async def interactive_mode():
     print("  /claude <prompt>   - Query Claude (Anthropic)")
     print("  /glm <prompt>      - Query GLM 4.6 (Z.AI)")
     print("  /deepseek <prompt> - Query Deepseek")
+    print("  /openai <prompt>   - Query OpenAI (GPT-4o via LiteLLM)")
     print("  /all <prompt>      - Query all available providers")
     print("  /quit              - Exit")
     print("=" * 70)
@@ -206,6 +236,10 @@ async def interactive_mode():
                     print(f"\n[DEEPSEEK]")
                     print("-" * 70)
                     await query_with_provider(prompt, "deepseek")
+                elif command == "/openai" and "openai" in available_providers:
+                    print(f"\n[OPENAI]")
+                    print("-" * 70)
+                    await query_with_provider(prompt, "openai")
                 elif command == "/all":
                     for provider in available_providers:
                         print(f"\n[{provider.upper()}]")
@@ -235,7 +269,7 @@ async def main():
             await interactive_mode()
         elif sys.argv[1] == "--compare":
             await run_comparison_test()
-        elif sys.argv[1] in ["--claude", "--glm", "--deepseek"]:
+        elif sys.argv[1] in ["--claude", "--glm", "--deepseek", "--openai"]:
             provider = sys.argv[1].replace("--", "")
             await run_specific_test(provider)
         else:
@@ -246,6 +280,7 @@ async def main():
             print("  uv run multi_provider_agent.py --claude     # Test Claude only")
             print("  uv run multi_provider_agent.py --glm        # Test GLM only")
             print("  uv run multi_provider_agent.py --deepseek   # Test Deepseek only")
+            print("  uv run multi_provider_agent.py --openai     # Test OpenAI only (requires LiteLLM)")
     else:
         # Default: run comparison test
         await run_comparison_test()
